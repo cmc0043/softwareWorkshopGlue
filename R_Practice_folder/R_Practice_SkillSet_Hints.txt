@@ -1,0 +1,15 @@
+Hints for Practice Skill set I, Part A
+
+A1: Review the presentation and your notes.  You are plotting x versus y.  
+x is the independent variable
+y is the dependent variable
+Use geom_bar(stat=“identity”) if you use ggplot()
+
+
+A2:  This dataset will take some manipulation, either in Excel or R (Excel is recommended).  As in A1, you are plotting x and y, and you can convert variables that may not go together as well or look very good into a factor (this will be very important in later skill sets).  For example, if you had time points 1, 2, and 4, you could change time into a categorical variable using factor().  R would then assess the category time for x, and the y variable, and plot only time points 1, 2, and 4, but not leave a gap for time point 3.
+
+You don’t have to use factor, although it’s important to get a peak at it now, but you will have to somehow sort the data into one continuous variable, and two categorical variables.  
+
+A3/A4: Use a similar method from A2, but remember to use geom_point() for a dot plot.  Use ??ttest to figure out which test you should use in R (there are more than one, bonus points if you can figure out the best test to use).
+
+Although there are more than one possible answer, a solution set will be uploaded sometime next week, along with a second practice skill set.

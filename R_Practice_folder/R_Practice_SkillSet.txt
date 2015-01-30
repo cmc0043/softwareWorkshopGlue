@@ -1,0 +1,15 @@
+R Practice Skill set I
+
+Part A:
+The scientists in the SuperScience® Lab believe they have just discovered a new weight loss food, the Super-Awesome-Growth Food (SAG).  To test its efficacy, one group of mice were fed SAG food for 4 weeks, while a second group were fed normal rodent chow.  The scientists are testing that mice who are fed SAG food will not have a higher weight gain than mice who are fed the usual rodent chow.
+
+A1: Create a bar chart of the average weight gain of mice in the SAG group from week 1 to week 4.
+
+A2: Create a bar chart of the average weight gain of mice in both the SAG and control groups from week 1 to week 4.  Hint: this will take some data manipulation in Excel or R first.
+
+A3: Create a dot plot of the average weight of the animals from week 1 to week 4.  Use both different colors and shapes to distinguish between the SAG group and the Control group animals.
+
+A4: Create a dot plot of the weight of all animals from week 1 to week 4.  Use any color or shape you wish to distinguish between the groups. Then, do a student’s t-test to determine if there is a statistically significant difference in week 4 between the weight in the Control and the SAG group.
+
+
+
