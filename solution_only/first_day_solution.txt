@@ -1,0 +1,24 @@
+# Solution only
+
+# Head and tail
+cat China.cc.txt | head -n 12 > ChinaNew.cc.txt
+cat China.cc.txt | tail -n 12 > HongKong.cc.txt
+cat Niger.cc.txt | head -n 12 > NigerNew.cc.txt
+cat Niger.cc.txt | tail -n 12 > Nigeria.cc.txt
+cat Guinea.cc.txt | head -n 24 | tail -n 12 > GuineaNew.cc.txt
+cat Guinea.cc.txt | head -n 12 > Equitorial_Guinea.cc.txt
+cat Guinea.cc.txt | tail -n 12 > Guinea-Bissau.cc.txt
+
+# then manually edit files, or:
+mv ChinaNew.cc.txt China.cc.txt
+mv NigerNew.cc.txt Niger.cc.txt
+mv GuineaNew.cc.txt Guinea.cc.txt
+
+# Grep
+cat Guinea.txt | grep -v '[^G][\t]' | grep -v '[a][\-]' > Guinea.cc.txt
+cat Guinea.txt | grep '[^G][\t]' > Equatorial_Guinea.cc.txt
+cat Guinea.txt |  grep '[a-z][\-]' > Guinea-Bissau.cc.txt
+cat Niger.cc.txt | grep '[i][a]' > Nigeria.cc.txt
+cat Niger.cc.txt | grep -v '[i][a]' > Niger.cc.txt
+cat China.cc.txt | grep '[\,]' > HongKong.cc.txt
+cat China.cc.txt | grep -v '[\,]' > China.cc.txt

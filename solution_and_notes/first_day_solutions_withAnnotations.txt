@@ -1,0 +1,367 @@
+# Challenge Day 1: Fix the files that have more than 12 lines in the gap minder dataset.
+#
+#
+#
+# ###########################
+# Option 1: Manually edit the file
+# ###########################
+# First, determine which files have more than 12 lines
+wc -l *.cc.txt | sort -n
+
+# for each one that is more than 12, 
+# create a bash script to remove the lines with similar country names and create new files
+
+# Note that there are several ways to solve this challenge, another possibility is to 
+# edit out the lines from the file
+
+# to identify the lines and remove them, two possibilities are described here.
+# #############
+# First Solution: Heads and Tails 
+# using the word count command with a sort pipe showed that Niger, Guinea, and China 
+# had incorrect line numbers, and checking them with the nano or cat command confirms this.
+
+# If the files are browsed, it turns out that we are lucky-the files are merged together, 
+# but thankfully are grouped similarly and evenly divided.  So, for China and Niger, 
+# the solution is simply to take the head of one file and the tail of another as follows:
+
+cat China.cc.txt | head -n 12 > ChinaNew.cc.txt
+cat China.cc.txt | tail -n 12 > HongKong.cc.txt
+cat Niger.cc.txt | head -n 12 > NigerNew.cc.txt
+cat Niger.cc.txt | tail -n 12 > Nigeria.cc.txt
+
+# once it is complete, check the new files with nano or cat, then rename them with mv
+mv ChinaNew.cc.txt China.cc.txt
+mv NigerNew.cc.txt Niger.cc.txt
+
+# note: you may have to use mv -f or rm to remove the old files
+
+# The Guinea file is a bit trickier.  There are 36 lines, but again, thankfully, similar
+# lines are together and everything overall is evenly divided.  It still is possible to 
+# get the middle section by using head and tail:
+
+cat Guinea.cc.txt | head -n 24 | tail -n 12 > GuineaNew.cc.txt
+cat Guinea.cc.txt | head -n 12 > Equitorial_Guinea.cc.txt
+cat Guinea.cc.txt | tail -n 12 > Guinea-Bissau.cc.txt
+
+# once it is complete, check the new files with nano or cat, then rename them with mv
+mv GuineaNew.cc.txt Guinea.cc.txt
+
+# ############
+# Second Solution: Gabbing with Grep
+# grep was briefly mentioned during the Software carpentry workshop, 
+# so I wanted to bring it up here as well.  Unfortunately, it is a very large topic, and I 
+# can barely scratch the surface, but I would urge anyone going into Bioinformatics
+# to research, read, and practice, because it is a useful tool in every aspect of the field.
+# I'd recommend starting with "Introducing Regular Expressions" by Michael Fitzgerald
+# to get a good foundation in how regular expressions work, which is integral to grep.
+
+# Similar to before, if we peek at the files with nano or cat, we notice that 
+# Guinea, China, and Niger have been merged together with other countries.  Instead of 
+# using line count, it is possible to more precisely match what is in the line.  
+# For example, 
+
+cat Guinea.cc.txt | grep '[G]' 
+# means concatenate the file Guinea.cc.txt to output, 
+# then use grep to match what is in the brackets, in this case, "G"
+# This will match everything, but if it is changed slightly to:
+
+cat Guinea.cc.txt | grep '[E]'
+# Only Equitorial Guinea matches, and is we try:
+
+cat Guinea.cc.txt | grep '[a-z][\-]'
+# this means "match any character, then the "-" character 
+# (the "\" is used to signal grep that we want it to look for that character)
+# it will match Guinea-Bissau
+
+# Guinea is a bit trickier.  If we tell grep:
+
+cat Guinea.cc.txt | grep '[^G][\t]'
+# to match "G" at the start of a line or word with the "^", then match a tab, it matches 
+# "Equatorial Guinea", because Bash thinks we want to match at the start of a word.
+# The solution involves using what we already did.  If there are three groups, 
+# and 2 out of the three successfully matched to what we want, then if we repeat the 
+# process but tell grep to find what did *not* match, then whatever is the result 
+# should be Guinea:
+
+cat Guinea.txt | grep -v '[^G][\t]' | grep -v '[a][\-]'
+# concatenate Guinea.cc.txt to output, then use grep to find what matches 
+# "G" at the start of a word and a tab 
+#	-> matches the "Equatorial Guinea" rows
+# *But* use the opposite
+# 	-> matches "Guinea" and Guinea-Bissau"
+# 	Then use grep to find what matches an "a" and a "-" in "Guinea" and "Guinea-Bissau"
+#		-> matches the "Guinea-Bissau" rows
+#	*But* use the opposite 
+#		-> this matches "Guinea", the only thing left, which is what we want
+
+# the final commands (renaming is omitted here) are:
+
+cat Guinea.txt | grep -v '[^G][\t]' | grep -v '[a][\-]' > Guinea.cc.txt
+cat Guinea.txt | grep '[^G][\t]' > Equatorial_Guinea.cc.txt
+cat Guinea.txt |  grep '[a-z][\-]' > Guinea-Bissau.cc.txt
+cat Niger.cc.txt | grep '[i][a]' > Nigeria.cc.txt
+cat Niger.cc.txt | grep -v '[i][a]' > Niger.cc.txt
+cat China.cc.txt | grep '[\,]' > HongKong.cc.txt
+cat China.cc.txt | grep -v '[\,]' > China.cc.txt
+
+
+# ###########################
+# Option 2 [Difficult]: Automatically edit the file
+# ###########################
+# Automatically editing the files is a very doable task only using the tools that were discussed
+# in the software workshop, with one exception, which will be explained shortly.  The key 
+# to the task is to break down the task into smaller parts, then reassemble the parts into
+# a larger finished product.  This process of modularizing your work is an essential
+# programming practice and saves hours of troubleshooting-it is a lot easier trying to 
+# figure out where a bug is in a small segment of a program then it is in a massive program
+# that has little organization to it.
+
+# Supplemental: Conditional if loop
+# An "if" loop is a logical loop that is used to test whether a condition is true.  
+# If it is true, then the program executes the function after the "if" statement, but if  
+# the statement is false, then the program ignores the function that was after the if loop 
+# and continues or ends.  The "fi" at the end signals the end of the "if" statement.  
+# Here is a simple example:
+
+	# if [raining = true]; then
+	#	echo 'bring an umbrella'
+	# fi
+
+# You can add something to an if loop called an "else" statement.  During program execution, 
+# if the "if" statement evaluates false, the program looks for an "else" statement.  
+# If one exists, the function in the "else statement is carried out. Here is another example:
+	# if [raining = true]; then 
+	#	echo 'bring an umbrella'
+	# else 
+	#	echo 'wear sunglasses'
+	# fi
+
+# One final note: A "while" loop was used instead of a "for" loop because of how Bash 
+# interprets text.  While it was possible to use a "for" loop, it was easier and 
+# seemed less complicated to use a while loop.  In this case, the setup is nearly identical,
+# instead of 
+	# for variable in dataset
+		# evaluate until the dataset ends
+# it is
+	# while variable in dataset
+		# evaluate until dataset ends
+
+# ############
+# Part 1: Find the rogue files
+
+stringChk=12
+guinea='Guinea'
+china='China'
+niger='Niger'
+for file in *.txt
+do
+	# echo $file
+	wcount=$(cat $file | wc -l)
+	# echo $wcount 
+	
+	if
+	[ $wcount -gt $stringChk ]; then
+		if
+			[[ "$file" =~ "$guinea" ]]; then
+			echo $file
+		fi
+		
+		if
+			[[ "$file" =~ "$china" ]]; then
+			echo $file
+		fi
+		
+		if
+			[[ "$file" =~ "$niger" ]]; then
+			echo $file
+		fi
+	fi
+	 
+done
+
+# Then, add in other countries to complete this part.
+# ############
+
+# ############
+# Part 2: Filter the incorrect lines from the files
+
+cp Guinea.cc.txt Guinea.txt
+while read -r line
+do
+        [[ "$line" =~ "Guinea-" ]] && echo $line >> Guinea-BissauFixed.cc.txt 2>&1
+       
+        [[ "$line" =~ "Equatorial" ]] && echo $line >> EquatorialGuineaFixed.cc.txt 2>&1
+            
+        [[ ! "$line" =~ "Equatorial" ]] && [[ ! "$line" =~ "Guinea-" ]] && echo $line >> GuineaFixed.cc.txt 2>&1
+        
+done < Guinea.txt 
+
+# Then, add in other countries to complete this part.
+# ############
+
+# ############
+# Part 3: Check the files to make sure the new ones don't get overwritten incorrectly
+
+bissFile=Guinea-BissauFixed.cc.txt
+blineName=$(head -n 1 $bissFile)
+
+if
+        [[ "$blineName" =~ "Guinea-Bissau" ]]; then
+               mv Guinea-BissauFixed.cc.txt Guinea-Bissau.cc.txt
+        else
+        	echo "Problem with copying $bissFile"
+fi
+        
+equatorialFile=EquatorialGuineaFixed.cc.txt        
+elineName=$(head -n 1 $equatorialFile)
+
+ if 
+        [[ "$elineName" =~ "Equatorial" ]]; then
+               mv EquatorialGuineaFixed.cc.txt Equatorial_Guinea.cc.txt
+        else
+        	echo "Problem with copying $equatorialFile"	
+fi
+
+
+guineaFile=GuineaFixed.cc.txt
+glineName=$(head -n 1 $guineaFile)
+
+if
+		[[ "$glineName" =~ "Guinea" ]]; then
+                mv GuineaFixed.cc.txt Guinea.cc.txt
+        else
+        	echo "Problem with copying $guineaFile"
+fi
+
+# Then, add in other countries to complete this part.
+# ############
+
+# ############
+# Part 4: Gumbo! Putting it all together
+
+stringChk=12
+guinea='Guinea'
+china='China'
+niger='Niger'
+for file in *.txt
+do
+	# echo $file
+	wcount=$(cat $file | wc -l)
+	# echo $wcount 
+	
+	if
+	[ $wcount -gt $stringChk ]; then
+		if
+			[[ "$file" =~ "$guinea" ]]; then
+			cp Guinea.cc.txt Guinea.txt
+			
+			while read -r line
+			do
+        	[[ "$line" =~ "Guinea-" ]] && echo $line >> Guinea-BissauFixed.cc.txt 2>&1
+        	[[ "$line" =~ "Equatorial" ]] && echo $line >> EquatorialGuineaFixed.cc.txt 2>&1
+        	[[ ! "$line" =~ "Equatorial" ]] && [[ ! "$line" =~ "Guinea-" ]] && echo $line >> GuineaFixed.cc.txt 2>&1
+        
+			done < Guinea.txt 
+			
+			bissFile=Guinea-BissauFixed.cc.txt
+			blineName=$(head -n 1 $bissFile)
+
+			if
+        		[[ "$blineName" =~ "Guinea-Bissau" ]]; then
+           		mv Guinea-BissauFixed.cc.txt Guinea-Bissau.cc.txt
+        	else
+    			echo "Problem with copying $bissFile"
+			fi
+			
+			equatorialFile=EquatorialGuineaFixed.cc.txt        
+			elineName=$(head -n 1 $equatorialFile)
+
+			if 
+        		[[ "$elineName" =~ "Equatorial" ]]; then
+               	mv EquatorialGuineaFixed.cc.txt Equatorial_Guinea.cc.txt
+        	else
+        		echo "Problem with copying $equatorialFile"	
+			fi
+
+			guineaFile=GuineaFixed.cc.txt
+			glineName=$(head -n 1 $guineaFile)
+			
+			if
+				[[ "$glineName" =~ "Guinea" ]]; then
+                mv GuineaFixed.cc.txt Guinea.cc.txt
+        	else
+        		echo "Problem with copying $guineaFile"
+			fi
+			rm Guinea.txt
+		fi
+		
+		if
+			[[ "$file" =~ "$china" ]]; then
+			cp China.cc.txt China.txt
+			
+			while read -r line 
+			do
+			[[ "$line" =~ "g," ]] && echo $line >> HongKongFixed.cc.txt 2>&1
+			[[ ! "$line" =~ "g," ]] && echo $line >> ChinaFixed.cc.txt 2>&1
+			 
+			done < China.txt 
+			
+			cp HongKongFixed.cc.txt HongKongTest.txt		
+			hongKongFile=HongKongFixed.cc.txt
+			hklineName=$(head -n 1 $hongKongFile)
+			
+			if 
+				[[ "$hklineName" =~ "Hong Kong" ]]; then
+				mv HongKongFixed.cc.txt Hong_Kong_China.cc.txt
+			else
+				echo "Problem with copying $hongKongFile"
+			fi
+			
+			chinaFile=ChinaFixed.cc.txt
+			clineName=$(head -n 1 $chinaFile)
+			
+			if
+        		[[ "$clineName" =~ "China" ]]; then
+           		mv ChinaFixed.cc.txt China.cc.txt
+        	else
+    			echo "Problem with copying $chinaFile"
+			fi
+			
+			rm China.txt
+		fi
+		
+		if
+			[[ "$file" =~ "$niger" ]]; then
+			cp Niger.cc.txt Niger.txt
+			
+			while read -r line
+			do
+			[[ "$line" =~ "ia" ]] && echo $line >> NigeriaFixed.cc.txt 2>&1
+			[[ ! "$line" =~ "ia" ]] && echo $line >> NigerFixed.cc.txt 2>&1
+			
+			done < Niger.txt
+			
+			nigeriaFile=NigeriaFixed.cc.txt
+			nglineName=$(head -n 1 $nigeriaFile)
+			
+			if
+				[[ "$nglineName" =~ "Nigeria" ]]; then
+				mv NigeriaFixed.cc.txt Nigeria.cc.txt
+			else
+				echo "Problem with copying $nigeriaFile"
+			fi
+			
+			nigerFile=NigerFixed.cc.txt
+			nlineName=$(head -n 1 $nigerFile)
+			
+			if
+				[[ "$nlineName" =~ "Niger" ]]; then
+				mv NigerFixed.cc.txt Niger.cc.txt
+			else
+				echo "Problem with copying $nigerFile"
+			fi
+			rm Niger.txt
+		fi
+	fi
+	 
+done
