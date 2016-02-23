@@ -1,0 +1,55 @@
+Git Quick Reference List
+
+
+1. For best results, first set up a Github account at github.com or similar site.
+
+2. Configure Git:
+	git config --global user.email "email_account_used_to_setup_github_account@emailaccount.com"
+	git config --global user.name "Your User Name configured on Github"
+	
+	git config --global color.ui "auto"
+	# Note: this is a helpful step that changes the color scheme for Git commands
+	
+	git config --global core.editor "nano"
+	# Note: *usually* this is already set up, but it's a good idea to do this step regardless
+	
+3. Create Git directory, navigate to directory
+	mkdir git_exercises
+	cd git_exercises
+	# Note: The error "fatal: not a git repository" will occur if you navigate away from 
+	# the git repository
+	
+4. Initialize Git, check status
+	git init
+	git status
+	
+5. Add document to Git
+	git add document.txt
+	
+6. Commit document that has been added to Git repository
+	git commit document.txt
+
+7. Show log of Git activities
+	git log
+
+8. Show differences in document in Git
+	git diff modified_document.txt
+
+9. Retrieve committed document from Git
+	git checkout -- document.txt
+	
+10. Test/Add SSH connection to Git
+	ssh -T git@github.com
+	Note: If settings differ in the setup screen in Github, use those.
+	Note2: You *must* use "git@github.com" as the username, not your username.
+	
+11. Connect, change, status, and remove remote repository
+	git remote add origin git@github.com:username/repository.git
+	git remote set-url origin git@github.com:username/repository.git
+	git remote -v
+	git remote rm remote_repository
+	
+12. Push and pull from remote repository
+	git push -u origin master
+	git pull origin master
+	
