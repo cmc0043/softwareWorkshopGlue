@@ -1,0 +1,15 @@
+wc -l *.txt | sort -n
+cat China.cc.txt ; echo "First problem file"
+cat Niger.cc.txt ; echo "Second problem file"
+cat Guinea.cc.txt ; echo "Third Problem file"
+echo "Always rename files to a different name in case you make a mistake..."
+head -n 12 China.cc.txt > ChinaNoHongKong.cc.txt
+tail -n 12 China.cc.txt > HongKongNoChina.cc.txt 
+head -n 12 Niger.cc.txt > NigerNoNigeria.cc.txt
+tail -n 12 Niger.cc.txt > NigeriaNoNiger.cc.txt
+head -n 12 Guinea.cc.txt > EquatorialAfricaNoOthers.cc.txt
+tail -n 12 Guinea.cc.txt > Guinea-BissauNoOthers.cc.txt
+head -n 24 Guinea.cc.txt | tail -n 12 > GuineaNoOthers.cc.txt
+# advanced solution: awk 'NR > 12 {print}' China.cc.txt > ChinaNoHongKong.cc.txt
+# super advanced solution, CAUTION!  This will modify the without warning file, use with care!!
+# sed -i -e '1,12d' China.cc.txt > HongKong.cc.txt
