@@ -1,0 +1,101 @@
+R Practice Skill set I Solutions with Explanations
+
+# A1
+# This is fairly straightforward.  Use R to get the mean() or Excel, and create a new .csv file
+# If you use R, you can potentially use the same data and create a new data frame, like:
+> dataFromCSV <- read.csv("dataset_R_fixed.csv")
+# The next two steps reformat the table by removing a row and then a column.
+# Check to see if they are necessary with head(dataFromCSV)
+# Next, transform the data to a vector to determine the mean for each column
+vectorCol1 <- as.vector(dataFromCSV([,1])
+meanCol1 <- mean(vectorCol1)
+#repeat this step for each column of SAG data, combine with c(), then create a data.frame
+> tableToPlot = data.frame(weekInTime, meansForSAG)
+> library(ggplot2)
+> library(ggthemes)
+> a1Chart <- ggplot(tableToPlot, aes(x=weekInTime, y=meansForSAG)) + 
+	geom_bar(stat="identity", position="dodge")
+
+# Alternatively, the data can be reformatted in Excel, exported as a .csv file, then 
+# imported and plotted as follows
+> library(ggplot2)
+> library(ggthemes)
+> a1 <- read.csv("practice1_A1_data.csv")
+> a1Chart <- ggplot(a1, aes(x=Week, y=SAGFedWeight)) + geom_bar(stat="identity", position="dodge")
+
+
+# A2
+# This example brings up a critical concept for R, and regardless of whether the data 
+# manipulation is performed in Excel or R, it is essential to understand how variables are
+# used in chart creation.  The data from A1 in the table has three variables: Week, 
+# SAGFedWeight, and ControlFedWeight.  You need to rearrange this to two categorical 
+# categorical variables and one continuous variable.  The melt() function accomplishes 
+# this.
+
+> dataAvgMelt <- melt(chartData, id.vars="Week")
+	
+	# Result for dataAvgMelt
+	#
+	#  Week         variable    value
+	# 1    1     SAGFedWeight 14.76477
+	# 2    2     SAGFedWeight 23.81842
+	# 3    3     SAGFedWeight 30.05823
+	# 4    4     SAGFedWeight 30.05823
+	# 5    1 ControlFedWeight 15.36218
+	# 6    2 ControlFedWeight 20.07102
+	# 7    3 ControlFedWeight 21.14539
+	# 8    4 ControlFedWeight 21.14539
+	
+> a2Chart <- ggplot(a1, aes(x=Week, y=value, fill=variable)) + 
+	geom_bar(stat="identity", position="dodge")
+	
+
+# A3/A4
+# To plot the graph with only an x and a y variable, you need to use additional features in 
+# the ggplot() function.  The aes() function in the ggplot() function takes an x argument, 
+# a y argument, and it can take a "fill" argument.  As the data currently is set up in the 
+# dataset_R.csv file, the data has four categorical variables: ControlWeightWeek1 and 
+# SAGWeightWeek1, ControlWeightWeek2 and SAGWeightWeek2, etc. However, this data can be 
+# rearranged either in Excel or R to be two categorical variables: Control Dataset and SAG  
+# Dataset, quantified in mass, and one continuous variable, time, quantified in weeks.  
+# For A3, weight gain can be quantified as the average weight in week 1 and the average in 
+# week 4, then plotted as datapoints (similar to A2).  For A4, all datapoints must be used,
+# and I found it easiest to create a new data frame as follows:
+	# Create Week Values column
+> wkVals <- rep(1:4, each=20)
+	# Create new data frame (assume data from CSV is in "data1" dataframe)
+> dataTbl <- data.frame(wkVals, c(data1$SAG1week, data1$SAG2week, data1$SAG3weeks, 
+	data1$SAG4weeks), c(data1$Control1week, data1$Control2weeks, data1$Control3weeks, 
+	data1$Control4weeks))
+	# Change column (category variable) names to something more readable)
+> colnames(dataTbl) <- c("wkVals", "SAG", "Control")
+	# melt the data to make it usable with ggplot.  This esentially re-assigns how the 
+	# variables are mapped within R.  In ggplot() the "variable" and "value" columns 
+	# are assigned to "y", "color", and "shape".  Type "head(dataTblMelt)" to visualize this.
+> dataTblMelt <- melt(dataTbl, id.vars="wkVals")
+> ggplot(dataTblMelt, aes(x=wkVals, y=value, color=variable, shape=variable)) + 
+	geom_point()
+
+# t.test
+# To determine if the data is normally distributed, use 
+> t.test(x=dataCSV[,7], y=dataCSV[,8], var.equal=TRUE)
+	# Bonus:
+	# To check for normality, use shapiro.test(x) for the two columns
+	# They both pass the normality test, i.e. p > 0.05
+	# Therefore, use "var.equal=TRUE" to use equal variances instead of the Wilcox test.
+	# (The default is not to use normal variances, and if you simply typed
+> t.test(x=dataCSV[,7], y=dataCSV[,8]) 
+# R would actually be running 
+# > t.test(x=dataCSV[,7], y=dataCSV[,8], var.equal=FALSE)
+# In this case there was no difference, but in some datasets it can matter.
+
+# A3 (Bonus)
+# where "dataFromCSV" is the variable where the data.frame data of the CSV file is stored,
+# to remove columns and rows, use 
+> dataFromCSV <- dataFromCSV[-c(1),]
+> dataFromCSV <- dataFromCSV[,-c(1)]
+# to rename columns, use
+> colnames(dataFromCSV) <- c("SAG1Wk", "Ctrl1Wk", "SAG2Wks", "Ctrl2Wks", "SAG3Wks", 
+	"Ctrl3Wks", "SAG4Wks", "Ctrl4Wks")
+
+
