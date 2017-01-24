@@ -64,3 +64,4 @@ Git Quick Reference List
 16. Merge branch with master, must be in branch, must have local copy of master
 	git checkout master
 	git merge BRANCHTOMERGE
+	git push
