@@ -51,3 +51,15 @@ Git Quick Reference List
 12. Push and pull from remote repository
 	git push -u origin master
 	git pull origin master
+	
+13. Switch branch
+	git checkout -b BRANCH
+
+14. Commit changes in branch, if adding to remote, requires #11 first
+	git commit -a -m ‘enter some comment here’
+
+15. Push changes from local to remote
+	git push --set-upstream origin NAMEOFBRANCH
+	
+16. Merge branch with master, must be in branch
+	git merge BRANCHTOMERGE
