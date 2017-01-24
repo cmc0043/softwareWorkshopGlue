@@ -61,5 +61,6 @@ Git Quick Reference List
 15. Push changes from local to remote
 	git push --set-upstream origin NAMEOFBRANCH
 	
-16. Merge branch with master, must be in branch
+16. Merge branch with master, must be in branch, must have local copy of master
+	git checkout master
 	git merge BRANCHTOMERGE
